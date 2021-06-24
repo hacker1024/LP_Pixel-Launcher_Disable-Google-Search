@@ -19,10 +19,6 @@ Download: https://gitlab.com/PixelExperience/vendor_gapps/-/blob/565c169de93bd7f
 [PACKAGE]
 [CLASSES]
 
-//{"group":"1"}
-//{"original":"6E 10 FE 02 01 00 0C 01 62 02 3B 13 6E 20 D4 02 21 00 0C ??"}
-//{"replaced":"?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 12 ??"}
-
 // Patch an implementation of startSearch in com.android.systemui.plugins.shared.LauncherOverlayManager.
 // This method returns true if the search launch was successful, and false if it wasn't.
 // It's used in multiple places where a fallback UI will display if it fails.
