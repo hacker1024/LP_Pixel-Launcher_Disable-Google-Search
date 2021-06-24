@@ -1,0 +1,55 @@
+[BEGIN]
+Pixel Launcher - Disable Google Search by hacker1024
+
+Disables Google Search in the Pixel Launcher, and searches for only apps.
+Tested on Pixel Experience / Android 11.
+
+This copy of the patch uses offsets instead of binary searching.
+It's intended to be used as documentation; use the binary search patch instead.
+
+The offsets are targeted at the Pixel Launcher that ships with Android 11 Pixel Experience:
+Name: NexusLauncherRelease.apk
+Version: 11
+Build: 825
+MD5: 19ab291061892b21f5bd051039e39feb
+SHA-1: b7f8a1422209eb12106aebaaf43a21a5c37c662e
+SHA-256: 9cb819725600a41d8c7a8032c674dfbcc0e58709a84fd9fbb12ab8cfba5589ff
+Download: https://gitlab.com/PixelExperience/vendor_gapps/-/blob/565c169de93bd7fa5bf0779421e89229224ba38e/system_ext/packages/privileged_apps/NexusLauncherRelease/NexusLauncherRelease.apk
+
+[PACKAGE]
+[CLASSES]
+
+//{"group":"1"}
+//{"original":"6E 10 FE 02 01 00 0C 01 62 02 3B 13 6E 20 D4 02 21 00 0C ??"}
+//{"replaced":"?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 12 ??"}
+
+// Patch an implementation of startSearch in com.android.systemui.plugins.shared.LauncherOverlayManager.
+// This method returns true if the search launch was successful, and false if it wasn't.
+// It's used in multiple places where a fallback UI will display if it fails.
+// The method contains some sort of check after logging a "startSearch" string, and returns false if it fails.
+// The check looks something like this: if (j.r < 6 || (iLauncherOverlay = jVar.j) == null) return false;
+// Replace the check with NOPs so the return code is executed, instead of a jump to the rest of the method.
+{"group":"1"}
+{"offset":"001CD8D0"}
+{"replaced":"00 00 00 00"}
+
+// Patch AllAppsQsbLayout's search method.
+// The search method calls "nexusLauncherActivity.mOverlayManager.startSearch", and shows a fallback app search UI if it returns false.
+// Replace the invocation with NOPs and always show the fallback UI.
+// This patch isn't required if the patch that makes startSearch return false applies successfully.
+{"group":"1"}
+{"offset":"001D468A"}
+{"replaced":"00 00 00 00 00 00 12"}
+
+// Patch AllAppsQsbLayout's search method.
+// At the beginning of the method, a check is made to determine whether the app drawer is open or not.
+// If the app drawer is not open, an additional method will be called to open the search overlay.
+// While this additional method also calls and checks the result of the startSearch method discussed above,
+// it uses an intent to show a different search overlay as a fallback instead of falling back to the app drawer fallback UI.
+// Ignore the result of the check whether the app drawer is open or not, and act like it is to show the fallback search UI.
+{"group":"2"}
+{"offset":"001D464E"}
+{"replaced":"12 +16"}
+
+[END]
+Patch complete.
